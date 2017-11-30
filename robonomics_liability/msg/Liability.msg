@@ -1,8 +1,0 @@
-string address
-string model
-string objective
-string promisee
-string promisor
-uint64 cost
-uint64 count 
-uint64 fee
