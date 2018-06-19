@@ -3,6 +3,7 @@
 # Robonomics liability tracking node.
 #
 
+from robonomics_lighthouse.msg import Result
 from robonomics_liability.msg import Liability
 from base58 import b58decode, b58encode
 from web3 import Web3, HTTPProvider
@@ -19,6 +20,10 @@ class Listener:
         http_provider = rospy.get_param('~web3_http_provider')
         self.web3 = Web3(HTTPProvider(http_provider))
 
+        from web3.middleware import geth_poa_middleware
+        # inject the poa compatibility middleware to the innermost layer
+        self.web3.middleware_stack.inject(geth_poa_middleware, layer=0)
+
         self.poll_interval = rospy.get_param('~poll_interval', 5)
 
         self.liability = rospy.Publisher('incoming', Liability, queue_size=10)
@@ -28,6 +33,22 @@ class Listener:
         self.builder = self.web3.eth.contract(builder_address, abi=builder_abi)
 
         self.liability_abi = json.loads(rospy.get_param('~liability_contract_abi'))
+
+        self.result_handler()
+
+    def result_handler(self):
+        result = rospy.Publisher('infochan/signing/result', Result, queue_size=10)
+
+        def liability_finalize(msg):
+            c = self.web3.eth.contract(msg.liability, abi=self.liability_abi)
+            def try_again():
+                if not c.call().isFinalized():
+                    result.publish(msg)
+                    Timer(30, try_again).start()
+            try_again()
+
+        rospy.Subscriber('result', Result, liability_finalize)
+
 
     def liability_read(self, address):
         '''
