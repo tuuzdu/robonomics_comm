@@ -19,6 +19,8 @@ class Lighthouse:
         '''
         rospy.init_node('robonomics_lighthouse')
 
+        self.confirmations = rospy.get_param('~tx_confirmations', 3)
+
         http_provider = HTTPProvider(rospy.get_param('~web3_http_provider'))
         ens = ENS(http_provider, addr=rospy.get_param('~ens_contract', None))
         self.web3 = Web3(http_provider, ens=ens)
@@ -56,8 +58,15 @@ class Lighthouse:
                 txhash = self.web3.eth.sendTransaction(tx) 
                 rospy.loginfo('Transaction sended at %s', Web3.toHex(txhash))
 
-                while not self.web3.eth.getTransactionReceipt(txhash):
+                def receipt():
+                    self.web3.eth.getTransactionReceipt(txhash)
+
+                while not receipt() and not receipt().blockNumber: 
                     rospy.sleep(15)
+
+                while receipt().blockNumber + self.confirmations < self.web3.eth.blockNumber:
+                    rospy.sleep(15)
+
                 rospy.loginfo('Transaction mined at %s', Web3.toHex(txhash))
 
             except Exception as e:
