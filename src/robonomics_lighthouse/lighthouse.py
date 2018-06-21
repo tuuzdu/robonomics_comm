@@ -61,7 +61,10 @@ class Lighthouse:
                 def receipt():
                     self.web3.eth.getTransactionReceipt(txhash)
 
-                while not receipt() and not receipt().blockNumber: 
+                while not receipt(): 
+                    rospy.sleep(15)
+
+                while not receipt().blockNumber: 
                     rospy.sleep(15)
 
                 while receipt().blockNumber + self.confirmations < self.web3.eth.blockNumber:
