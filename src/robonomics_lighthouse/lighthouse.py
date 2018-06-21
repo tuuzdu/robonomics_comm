@@ -58,10 +58,13 @@ class Lighthouse:
                 txhash = self.web3.eth.sendTransaction(tx) 
                 rospy.loginfo('Transaction sended at %s', Web3.toHex(txhash))
 
-                while not self.web3.eth.getTransactionReceipt(txhash):
+                def receipt():
+                    self.web3.eth.getTransactionReceipt(txhash)
+
+                while not receipt() and not receipt().blockNumber: 
                     rospy.sleep(15)
 
-                while self.web3.eth.getTransactionReceipt(txhash).blockNumber + self.confirmations < self.web3.eth.blockNumber:
+                while receipt().blockNumber + self.confirmations < self.web3.eth.blockNumber:
                     rospy.sleep(15)
 
                 rospy.loginfo('Transaction mined at %s', Web3.toHex(txhash))
