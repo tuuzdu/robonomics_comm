@@ -6,7 +6,6 @@
   <arg name="gas_price_gwei" default="0" />
   <arg name="account_address" default="" />
   <arg name="ens_contract" default="" />
-  <arg name="gas_price_gwei" default=0 />
 
   <arg name="web3_http_provider" default="http://localhost:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
