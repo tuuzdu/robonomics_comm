@@ -5,9 +5,9 @@
   <arg name="xrt_contract" default="xrt.0.robonomics.eth" />
   <arg name="gas_price_gwei" default="0" />
   <arg name="account_address" default="" />
-  <arg name="ens_contract" default="" />
+  <arg name="ens_contract" default="0x314159265dD8dbb310642f98f50C066173C1259b" />
 
-  <arg name="web3_http_provider" default="http://localhost:8545" />
+  <arg name="web3_http_provider" default="http://93.187.187.109:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
 
   <!-- Robonomics lighthouse -->

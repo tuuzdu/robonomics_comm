@@ -60,15 +60,15 @@ class Listener:
         c = self.web3.eth.contract(address, abi=self.liability_abi)
         msg = Liability()
         msg.address = address
-        msg.model = b58encode(c.call().model())
-        msg.objective = b58encode(c.call().objective())
+        msg.model = b58encode(c.call().model()).decode("utf-8") 
+        msg.objective = b58encode(c.call().objective()).decode("utf-8") 
         msg.promisee = c.call().promisee()
         msg.promisor = c.call().promisor()
         msg.token = c.call().token()
         msg.cost = c.call().cost()
         msg.validator = c.call().validator()
         msg.validatorFee = c.call().validatorFee()
-        rospy.logdebug('New liability readed: %s', msg)
+        rospy.loginfo('New liability readed: %s', msg)
         return msg
 
     def spin(self):
@@ -78,7 +78,8 @@ class Listener:
         liability_filter = self.factory.eventFilter('NewLiability')
         def liability_filter_thread():
             for entry in liability_filter.get_new_entries():
-                self.liability.publish(self.liability_read(entry['args']['liability']))
+                msg = self.liability_read(entry['args']['liability'])
+                self.liability.publish(msg)
             Timer(self.poll_interval, liability_filter_thread).start()
         liability_filter_thread()
 

@@ -5,7 +5,7 @@
 
   <arg name="lighthouse_contract" default="airalab.lighthouse.0.robonomics.eth" />
 
-  <arg name="web3_http_provider" default="http://127.0.0.1:8545" />
+  <arg name="web3_http_provider" default="http://93.187.187.109:8545" />
   <arg name="ipfs_http_provider" default="http://127.0.0.1:5001" />
 
   <!-- Robonomics information channel -->
